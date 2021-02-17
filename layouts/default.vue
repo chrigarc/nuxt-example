@@ -1,5 +1,7 @@
 <template>
   <div>
+    <loading :active="isLoading"
+             :is-full-page="true"/>
     <nav
       class="navbar header has-shadow is-primary"
       role="navigation"
@@ -10,17 +12,20 @@
           class="navbar-item"
           href="/"
         >
-          <img
-            src="~assets/buefy.png"
-            alt="Buefy"
-            height="28"
-          >
+          IMSS - Pruebas
         </a>
 
         <div class="navbar-burger">
-          <span />
-          <span />
-          <span />
+          <span/>
+          <span/>
+          <span/>
+        </div>
+      </div>
+      <div class="navbar-menu">
+        <div class="navbar-end">
+          <a class="navbar-item" @click="onLogout">
+            Salir
+          </a>
         </div>
       </div>
     </nav>
@@ -39,35 +44,57 @@
               :to="item.to"
               exact-active-class="is-active"
             >
-              <b-icon :icon="item.icon" /> {{ item.title }}
+              <b-icon :icon="item.icon"/>
+              {{ item.title }}
             </nuxt-link>
           </li>
         </ul>
       </aside>
 
       <div class="container column is-10">
-        <nuxt />
+        <nuxt/>
       </div>
     </section>
   </div>
 </template>
 
 <script>
+// Import component
+import Loading from 'vue-loading-overlay';
+// Import stylesheet
+import 'vue-loading-overlay/dist/vue-loading.css';
 export default {
-  data () {
+  middleware: "auth",
+  components: {Loading},
+  computed: {
+    isLoading () {
+      return this.$store.state.loading.isLoading
+    }
+  },
+  data() {
     return {
       items: [
         {
-          title: 'Home',
+          title: 'Inicio',
           icon: 'home',
-          to: { name: 'index' }
+          to: {name: 'index'}
         },
         {
           title: 'Inspire',
-          icon: 'lightbulb',
-          to: { name: 'inspire' }
+          icon: 'toolbox',
+          to: '/inspire'
         }
       ]
+    }
+  },
+  methods: {
+    onLogout() {
+      this.$buefy.dialog.confirm({
+        message: '¿Seguro de cerrar la sesión?',
+        onConfirm: () => {
+          this.$auth.logout()
+        }
+      })
     }
   }
 }
